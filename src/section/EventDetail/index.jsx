@@ -29,7 +29,7 @@ export default function EventDetail() {
         <div className="p-4 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400">
           <Loader2 className="w-8 h-8 opacity-0" />
         </div>
-        <h2 className="text-2xl font-bold">Event Not Found</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">Event Not Found</h2>
         <p className="text-xs text-neutral-400 max-w-sm text-center">
           The event you are looking for might have been removed or does not exist.
         </p>
@@ -54,12 +54,12 @@ export default function EventDetail() {
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-16 sm:pb-20">
       <HeroBanner event={event} />
 
       {/* Main Content Grid */}
-      <div className="max-w-6xl -mt-24 mx-auto px-4 sm:px-6 lg:px-8 space-y-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl -mt-16 sm:-mt-24 mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <EventInfo event={event} onShare={handleShare} copied={copied} />
           <RsvpCard
             event={event}
