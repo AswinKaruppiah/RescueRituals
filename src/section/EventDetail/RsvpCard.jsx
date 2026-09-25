@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import RsvpConfirmModal from '../../components/Modal/RsvpConfirmModal';
-import { Users, CheckCircle } from 'lucide-react';
+import { Users, CheckCircle, Crown } from 'lucide-react';
 
 export default function RsvpCard({ event, onRsvpToggle }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleButtonClick = () => {
+    if (event.isHost) return;
     if (!event.isGoing) {
       setIsOpen(true);
     } else {
@@ -49,24 +50,31 @@ export default function RsvpCard({ event, onRsvpToggle }) {
           </div>
         </div>
 
-        {/* Action Button */}
-        <button
-          onClick={handleButtonClick}
-          className={`w-full py-3.5 rounded-xl text-sm font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
-            event.isGoing
-              ? 'bg-white text-black hover:bg-neutral-200 shadow-lg'
-              : 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
-          }`}
-        >
-          {event.isGoing ? (
-            <>
-              <CheckCircle className="w-4 h-4" />
-              RSVP Confirmed (Click to Cancel)
-            </>
-          ) : (
-            'Confirm RSVP'
-          )}
-        </button>
+        {/* Action Button / Host Status */}
+        {event.isHost ? (
+          <div className="w-full py-3.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center gap-2 cursor-default">
+            <Crown className="w-4 h-4 text-amber-400" />
+            <span>You're the Host</span>
+          </div>
+        ) : (
+          <button
+            onClick={handleButtonClick}
+            className={`w-full py-3.5 rounded-xl text-sm font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
+              event.isGoing
+                ? 'bg-white text-black hover:bg-neutral-200 shadow-lg'
+                : 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
+            }`}
+          >
+            {event.isGoing ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                RSVP Confirmed (Click to Cancel)
+              </>
+            ) : (
+              'Confirm RSVP'
+            )}
+          </button>
+        )}
       </div>
 
       {/* HeroUI RSVP Confirmation Modal */}

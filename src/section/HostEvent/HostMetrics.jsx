@@ -1,7 +1,11 @@
 import React from 'react';
 import { Layers, CheckCircle2, Archive } from 'lucide-react';
 
-export default function HostMetrics({ total = 0, openCount = 0, closedCount = 0 }) {
+export default function HostMetrics({
+  total = 0,
+  openCount = 0,
+  closedCount = 0,
+}) {
   return (
     <div className="grid grid-cols-3 gap-3">
       {/* Total Events */}

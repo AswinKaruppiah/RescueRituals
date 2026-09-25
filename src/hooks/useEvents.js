@@ -18,10 +18,27 @@ export function useEvents() {
 
   const { events, setEvents, currentUserId } = context;
 
-  // Filter for user-created / hosted events
+  // All events with isGoing and isHost dynamically resolved for the active user
+  const resolvedEvents = useMemo(
+    () =>
+      events.map((evt) => ({
+        ...evt,
+        isGoing: Array.isArray(evt.rsvps) && evt.rsvps.includes(currentUserId),
+        isHost: Boolean(currentUserId && evt.hostId === currentUserId),
+      })),
+    [events, currentUserId]
+  );
+
+  // Filter for events hosted by this specific user
   const userEvents = useMemo(
-    () => events.filter((evt) => evt.isUserCreated),
-    [events]
+    () => resolvedEvents.filter((evt) => evt.isUserCreated && (evt.hostId === currentUserId || !evt.hostId)),
+    [resolvedEvents, currentUserId]
+  );
+
+  // Filter for events where this user's ID is in the rsvps array
+  const comingEvents = useMemo(
+    () => resolvedEvents.filter((evt) => Array.isArray(evt.rsvps) && evt.rsvps.includes(currentUserId)),
+    [resolvedEvents, currentUserId]
   );
 
   // Host metrics for user-created events
@@ -30,20 +47,26 @@ export function useEvents() {
     [userEvents]
   );
 
-  // Get a single event by ID
+  // Get a single event by ID, dynamically computing isGoing and isHost for the current user
   const getEvent = useCallback(
     (id) => {
-      return getEventById(events, id);
+      const evt = getEventById(events, id);
+      if (!evt) return null;
+      return {
+        ...evt,
+        isGoing: Array.isArray(evt.rsvps) && evt.rsvps.includes(currentUserId),
+        isHost: Boolean(currentUserId && evt.hostId === currentUserId),
+      };
     },
-    [events]
+    [events, currentUserId]
   );
 
-  // Add a new user event
+  // Add a new user event with current user ID
   const addEvent = useCallback(
     (newEventData) => {
-      setEvents((prevEvents) => addEventItem(prevEvents, newEventData));
+      setEvents((prevEvents) => addEventItem(prevEvents, newEventData, currentUserId));
     },
-    [setEvents]
+    [setEvents, currentUserId]
   );
 
   // Edit an existing user event
@@ -54,17 +77,19 @@ export function useEvents() {
     [setEvents]
   );
 
-  // Toggle RSVP status
+  // Toggle RSVP status for current user ID in the event's rsvps array
   const toggleRsvp = useCallback(
     (id) => {
-      setEvents((prevEvents) => toggleEventRsvp(prevEvents, id));
+      setEvents((prevEvents) => toggleEventRsvp(prevEvents, id, currentUserId));
     },
-    [setEvents]
+    [setEvents, currentUserId]
   );
 
   return {
-    events,
+    events: resolvedEvents,
+    rawEvents: events,
     userEvents,
+    comingEvents,
     hostMetrics,
     currentUserId,
     getOrCreateUserId,

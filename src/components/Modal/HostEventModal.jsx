@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
+import { CATEGORY_OPTIONS } from '../../constant/events';
 import {
   Calendar,
   Clock,
@@ -15,18 +16,6 @@ import {
   X,
 } from 'lucide-react';
 
-const DEFAULT_IMAGE =
-  'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80';
-
-const CATEGORY_OPTIONS = [
-  'Animal Rescue',
-  'Wellness',
-  'Workshops',
-  'Eco & Nature',
-  'Music & Arts',
-  'Community',
-];
-
 export default function HostEventModal({
   isOpen,
   onClose,
@@ -40,8 +29,8 @@ export default function HostEventModal({
     date: '2026-10-20',
     time: '10:00 AM - 02:00 PM',
     location: '',
-    category: 'Animal Rescue',
-    image: DEFAULT_IMAGE,
+    category: CATEGORY_OPTIONS[0] || 'Animal Rescue',
+    image: '',
     capacity: 50,
     price: 'Free',
   });
@@ -54,8 +43,8 @@ export default function HostEventModal({
         date: editingEvent.date || '2026-10-20',
         time: editingEvent.time || '',
         location: editingEvent.location || '',
-        category: editingEvent.category || 'Animal Rescue',
-        image: editingEvent.image || DEFAULT_IMAGE,
+        category: editingEvent.category || (CATEGORY_OPTIONS[0] || 'Animal Rescue'),
+        image: editingEvent.image || '',
         capacity: editingEvent.capacity || 50,
         price: editingEvent.price || 'Free',
       });
@@ -66,8 +55,8 @@ export default function HostEventModal({
         date: '2026-10-20',
         time: '10:00 AM - 02:00 PM',
         location: '',
-        category: 'Animal Rescue',
-        image: DEFAULT_IMAGE,
+        category: CATEGORY_OPTIONS[0] || 'Animal Rescue',
+        image: '',
         capacity: 50,
         price: 'Free',
       });
@@ -83,8 +72,6 @@ export default function HostEventModal({
 
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
-    if (!formData.title.trim()) return;
-
     if (onSubmit) {
       onSubmit(formData);
     }
@@ -126,8 +113,10 @@ export default function HostEventModal({
         <form id="host-event-modal-form" onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-              <Type className="w-3.5 h-3.5 text-neutral-300" /> Event Title
+            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Type className="w-3.5 h-3.5 text-neutral-300" /> Event Title <span className="text-rose-400">*</span>
+              </span>
             </label>
             <input
               type="text"
@@ -141,11 +130,14 @@ export default function HostEventModal({
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-              <AlignLeft className="w-3.5 h-3.5 text-neutral-300" /> Description
+            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <AlignLeft className="w-3.5 h-3.5 text-neutral-300" /> Description <span className="text-rose-400">*</span>
+              </span>
             </label>
             <textarea
               rows={3}
+              required
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="Describe the agenda, who should attend, and what to bring..."
@@ -157,11 +149,14 @@ export default function HostEventModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Date */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Date
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Date <span className="text-rose-400">*</span>
+                </span>
               </label>
               <input
                 type="date"
+                required
                 value={formData.date}
                 onChange={(e) => handleChange('date', e.target.value)}
                 className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-white transition [color-scheme:dark]"
@@ -170,11 +165,14 @@ export default function HostEventModal({
 
             {/* Time */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-neutral-300" /> Time
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-neutral-300" /> Time <span className="text-rose-400">*</span>
+                </span>
               </label>
               <input
                 type="text"
+                required
                 value={formData.time}
                 onChange={(e) => handleChange('time', e.target.value)}
                 placeholder="e.g. 10:00 AM - 02:00 PM"
@@ -185,11 +183,14 @@ export default function HostEventModal({
 
           {/* Location */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-neutral-300" /> Location / Venue
+            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-neutral-300" /> Location / Venue <span className="text-rose-400">*</span>
+              </span>
             </label>
             <input
               type="text"
+              required
               value={formData.location}
               onChange={(e) => handleChange('location', e.target.value)}
               placeholder="e.g. Cubbon Park Pavilion Gardens, Bengaluru"
@@ -200,10 +201,13 @@ export default function HostEventModal({
           {/* Category, Price & Capacity Row */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5 text-neutral-300" /> Category
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-neutral-300" /> Category <span className="text-rose-400">*</span>
+                </span>
               </label>
               <select
+                required
                 value={formData.category}
                 onChange={(e) => handleChange('category', e.target.value)}
                 className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-white transition [color-scheme:dark]"
@@ -217,11 +221,14 @@ export default function HostEventModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <IndianRupee className="w-3.5 h-3.5 text-neutral-300" /> Price
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <IndianRupee className="w-3.5 h-3.5 text-neutral-300" /> Price <span className="text-rose-400">*</span>
+                </span>
               </label>
               <input
                 type="text"
+                required
                 value={formData.price}
                 onChange={(e) => handleChange('price', e.target.value)}
                 placeholder="e.g. Free or ₹250"
@@ -230,12 +237,15 @@ export default function HostEventModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-neutral-300" /> Capacity
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-neutral-300" /> Capacity <span className="text-rose-400">*</span>
+                </span>
               </label>
               <input
                 type="number"
                 min="1"
+                required
                 value={formData.capacity}
                 onChange={(e) => handleChange('capacity', Number(e.target.value))}
                 className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-white transition"
@@ -245,16 +255,25 @@ export default function HostEventModal({
 
           {/* Full-Width Cover Image URL */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5 text-neutral-300" /> Cover Image URL
+            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-neutral-300" /> Cover Image URL <span className="text-rose-400">*</span>
+              </span>
+              <span className="text-[10px] text-neutral-500 font-normal lowercase">unsplash only</span>
             </label>
             <input
               type="url"
+              required
+              pattern="https?:\/\/(images|plus|[a-zA-Z0-9-]+\.)?unsplash\.com\/.*"
+              title="Please provide a valid Unsplash image URL (e.g. https://images.unsplash.com/...)"
               value={formData.image}
               onChange={(e) => handleChange('image', e.target.value)}
-              placeholder="https://images.unsplash.com/..."
+              placeholder="https://images.unsplash.com/photo-..."
               className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
             />
+            <p className="text-[11px] text-neutral-500">
+              Only Unsplash image URLs are accepted (e.g. <span className="text-neutral-400 font-mono">https://images.unsplash.com/...</span>)
+            </p>
           </div>
         </form>
       </div>

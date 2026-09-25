@@ -1,7 +1,7 @@
 /**
  * Event Operations Helper
  * Standalone functions for getting, adding, editing, calculating event metrics,
- * and managing persistent user identification.
+ * and managing persistent user identification and RSVP user arrays.
  * Note: Default events (from events.js) cannot be modified or owned.
  */
 
@@ -33,9 +33,10 @@ export const isEventClosed = (event) => {
   if (!event) return false;
 
   // Check if event capacity is completely filled
+  const attendeesCount = Array.isArray(event.rsvps) ? event.rsvps.length : (event.attendeesCount || 0);
   const isFull =
     Number(event.capacity) > 0 &&
-    Number(event.attendeesCount || 0) >= Number(event.capacity);
+    Number(attendeesCount) >= Number(event.capacity);
 
   // Check if event date has passed
   let isExpired = false;
@@ -73,16 +74,16 @@ export const getEventById = (events, id) => {
   return events.find((item) => String(item.id) === String(id)) || null;
 };
 
-// Add a new user-owned event to the events array
-export const addEventItem = (events, newEventData) => {
-  const currentUserId = getOrCreateUserId();
+// Add a new user-owned event to the events array with hostId and empty rsvps array
+export const addEventItem = (events, newEventData, userId) => {
+  const currentUserId = userId || getOrCreateUserId();
 
   const newEvent = {
     id: `evt-user-${Date.now()}`,
     ...newEventData,
     hostId: currentUserId,
+    rsvps: [],
     attendeesCount: 0,
-    isGoing: false,
     isUserCreated: true,
   };
 
@@ -103,17 +104,37 @@ export const editEventItem = (events, id, updatedData) => {
   });
 };
 
-// Toggle RSVP status and attendee count for an event
-export const toggleEventRsvp = (events, id) => {
+// Toggle RSVP status and maintain the rsvps array of user IDs
+export const toggleEventRsvp = (events, id, userId) => {
+  const currentUserId = userId || getOrCreateUserId();
+
   return events.map((evt) => {
     if (String(evt.id) === String(id)) {
-      const nextStatus = !evt.isGoing;
+      // If the current user is the host of this event, do not allow RSVPing
+      if (evt.hostId && evt.hostId === currentUserId) {
+        return evt;
+      }
+
+      const currentRsvps = Array.isArray(evt.rsvps) ? [...evt.rsvps] : [];
+      const hasRsvp = currentRsvps.includes(currentUserId);
+      
+      let nextRsvps;
+      if (hasRsvp) {
+        // Remove user ID from rsvps array
+        nextRsvps = currentRsvps.filter((uid) => uid !== currentUserId);
+      } else {
+        // Add user ID to rsvps array
+        nextRsvps = [...currentRsvps, currentUserId];
+      }
+
+      const nextIsGoing = !hasRsvp;
+      const baseCount = typeof evt.attendeesCount === 'number' ? evt.attendeesCount : 0;
+      const nextCount = nextIsGoing ? baseCount + 1 : Math.max(0, baseCount - 1);
+
       return {
         ...evt,
-        isGoing: nextStatus,
-        attendeesCount: nextStatus
-          ? evt.attendeesCount + 1
-          : Math.max(0, evt.attendeesCount - 1),
+        rsvps: nextRsvps,
+        attendeesCount: nextCount,
       };
     }
     return evt;

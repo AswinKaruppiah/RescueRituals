@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './components/Toast';
 import { EventProvider } from './context/EventContext';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import HostEvent from './section/HostEvent';
 import EventDetail from './section/EventDetail';
@@ -11,6 +12,7 @@ export default function App() {
     <EventProvider>
       <ToastProvider placement="top-right" />
       <Router>
+        <ScrollToTop />
         <div className="min-h-screen bg-[#262626] text-white">
           <Routes>
             <Route path="/" element={<Home />} />

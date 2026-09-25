@@ -1,3 +1,20 @@
+export const CATEGORY_OPTIONS = [
+  'Animal Rescue',
+  'Wellness',
+  'Workshops',
+  'Eco & Nature',
+  'Music & Arts',
+  'Community',
+  'Sound Healing',
+  'Yoga & Mindfulness',
+  'Shelter Volunteering',
+  'Food Drives & Nourishment',
+  'Art & Creative Therapy',
+  'Tree Planting & Rewilding',
+  'Fitness & Outdoor Trek',
+  'Youth & Education',
+];
+
 export const DUMMY_EVENTS = [
   {
     id: 'evt-1',
@@ -11,7 +28,8 @@ export const DUMMY_EVENTS = [
     capacity: 150,
     attendeesCount: 94,
     price: 'Free',
-    isGoing: false,
+    hostId: 'platform_system',
+    rsvps: [],
   },
   {
     id: 'evt-2',
@@ -25,7 +43,8 @@ export const DUMMY_EVENTS = [
     capacity: 40,
     attendeesCount: 38,
     price: '₹499',
-    isGoing: false,
+    hostId: 'platform_system',
+    rsvps: [],
   },
   {
     id: 'evt-3',
@@ -39,7 +58,8 @@ export const DUMMY_EVENTS = [
     capacity: 250,
     attendeesCount: 180,
     price: 'Free',
-    isGoing: false,
+    hostId: 'platform_system',
+    rsvps: [],
   },
   {
     id: 'evt-4',
@@ -53,7 +73,8 @@ export const DUMMY_EVENTS = [
     capacity: 80,
     attendeesCount: 65,
     price: 'Free',
-    isGoing: false,
+    hostId: 'platform_system',
+    rsvps: [],
   },
   {
     id: 'evt-5',
@@ -67,7 +88,8 @@ export const DUMMY_EVENTS = [
     capacity: 50,
     attendeesCount: 47,
     price: '₹250',
-    isGoing: false,
+    hostId: 'platform_system',
+    rsvps: [],
   },
   {
     id: 'evt-6',
@@ -81,6 +103,7 @@ export const DUMMY_EVENTS = [
     capacity: 30,
     attendeesCount: 22,
     price: '₹850',
-    isGoing: false,
+    hostId: 'platform_system',
+    rsvps: [],
   }
 ];
