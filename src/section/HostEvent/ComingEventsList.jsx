@@ -67,7 +67,7 @@ export default function ComingEventsList({ events = [], onCancelRsvp, mutatingId
               <div className="flex items-start gap-3 min-w-0">
                 <img
                   src={evt.image}
-                  alt={evt.title}
+                  alt={evt.title || 'Event thumbnail'}
                   className="w-14 h-14 rounded-lg object-cover flex-shrink-0 border border-neutral-800"
                 />
                 <div className="min-w-0 space-y-1 flex-1">

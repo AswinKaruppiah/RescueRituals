@@ -22,16 +22,15 @@ export default function Banner() {
     );
   };
 
-  const event = events[safeIndex] || events[0];
+  const event = events[safeIndex];
 
   return (
     <div className="relative w-full">
       {/* Full Width Carousel Container with Fixed Background */}
       <div
-        className="relative h-[70vh] w-full overflow-hidden bg-cover bg-center bg-fixed"
+        className="relative h-[70vh] w-full overflow-hidden bg-cover bg-center bg-fixed bg-neutral-900"
         style={{ backgroundImage: `url(${event.image})` }}
       >
-
         {/* Bottom Fade Matching Background Color (#262626) */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#262626] via-[#262626]/70 to-transparent" />
 

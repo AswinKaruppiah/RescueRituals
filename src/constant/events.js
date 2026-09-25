@@ -14,5 +14,3 @@ export const CATEGORY_OPTIONS = [
   'Fitness & Outdoor Trek',
   'Youth & Education',
 ];
-
-

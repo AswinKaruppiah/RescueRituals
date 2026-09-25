@@ -12,10 +12,10 @@ export default function EventCard({ event, onRsvpToggle, isUpdating = false }) {
       className="group bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden flex flex-col justify-between cursor-pointer"
     >
       {/* Top Image */}
-      <div className="relative h-48 w-full overflow-hidden">
+      <div className="relative h-48 w-full overflow-hidden bg-neutral-800">
         <img
           src={event.image}
-          alt={event.title}
+          alt={event.title || 'Event image'}
           className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
         />
         <span className="absolute top-3 left-3 px-3 py-1 bg-black/80 text-white text-xs font-semibold rounded-full border border-neutral-700">

@@ -9,9 +9,9 @@ import { Loader2 } from 'lucide-react';
 export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getEvent, toggleRsvp, events, mutatingId, loading } = useEvents();
+  const { getEvent, toggleRsvp, mutatingId, loading } = useEvents();
 
-  const event = getEvent(id) || (!loading ? events[0] : null);
+  const event = getEvent(id);
   const [copied, setCopied] = useState(false);
 
   if (loading && !event) {

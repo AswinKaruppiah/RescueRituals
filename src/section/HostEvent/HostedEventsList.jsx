@@ -69,7 +69,7 @@ export default function HostedEventsList({ events = [], onEditEvent, onOpenCreat
                 <div className="flex items-start sm:items-center gap-3.5 min-w-0 w-full sm:w-auto">
                   <img
                     src={evt.image}
-                    alt={evt.title}
+                    alt={evt.title || 'Event thumbnail'}
                     className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-neutral-800"
                   />
                   <div className="min-w-0 space-y-1 flex-1">
@@ -87,7 +87,7 @@ export default function HostedEventsList({ events = [], onEditEvent, onOpenCreat
                         {closed ? 'Closed' : 'Active'}
                       </span>
                       <span className="text-[11px] text-neutral-400 flex items-center gap-1">
-                        <Users className="w-3 h-3 text-neutral-500" /> {evt.attendeesCount || 0}/{evt.capacity || 50}
+                        <Users className="w-3 h-3 text-neutral-500" /> {evt.attendeesCount || 0}/{evt.capacity}
                       </span>
                     </div>
 
