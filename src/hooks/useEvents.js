@@ -10,6 +10,7 @@ import {
   isEventClosed,
   getOrCreateUserId,
 } from '../services/eventOperations';
+import { saveEvents } from '../services/jsonBinService';
 
 export function useEvents() {
   const context = useContext(EventContext);
@@ -17,7 +18,16 @@ export function useEvents() {
     throw new Error('useEvents must be used within an EventProvider');
   }
 
-  const { events, setEvents, currentUserId } = context;
+  const {
+    events,
+    setEvents,
+    currentUserId,
+    loading,
+    error,
+    mutatingId,
+    setMutatingId,
+    refreshEvents,
+  } = context;
 
   // All events with isGoing and isHost dynamically resolved for the active user
   const resolvedEvents = useMemo(
@@ -62,31 +72,57 @@ export function useEvents() {
     [events, currentUserId]
   );
 
-  // Add a new user event with current user ID
+  // Add a new user event with current user ID - directly persists to JSONBin
   const addEvent = useCallback(
-    (newEventData) => {
-      setEvents((prevEvents) => addEventItem(prevEvents, newEventData, currentUserId));
-      toast.success('Event hosted successfully!', {
-        description: newEventData.title || 'Your new event is now live.',
-      });
+    async (newEventData) => {
+      setMutatingId('create');
+      try {
+        const nextEvents = addEventItem(events, newEventData, currentUserId);
+        const updated = await saveEvents(nextEvents);
+        setEvents(Array.isArray(updated) ? updated : nextEvents);
+        toast.success('Event hosted successfully!', {
+          description: newEventData.title || 'Your new event is now live in the cloud database.',
+        });
+        return nextEvents;
+      } catch (err) {
+        toast.error('Cloud DB Save Failed', {
+          description: err.message || 'Unable to save to JSONBin. The event was not created.',
+        });
+        throw err;
+      } finally {
+        setMutatingId(null);
+      }
     },
-    [setEvents, currentUserId]
+    [events, setEvents, currentUserId, setMutatingId]
   );
 
-  // Edit an existing user event
+  // Edit an existing user event - directly persists to JSONBin
   const editEvent = useCallback(
-    (id, updatedData) => {
-      setEvents((prevEvents) => editEventItem(prevEvents, id, updatedData));
-      toast.success('Event updated successfully!', {
-        description: updatedData.title ? `Updated details for ${updatedData.title}` : 'Changes saved.',
-      });
+    async (id, updatedData) => {
+      setMutatingId(id);
+      try {
+        const nextEvents = editEventItem(events, id, updatedData);
+        const updated = await saveEvents(nextEvents);
+        setEvents(Array.isArray(updated) ? updated : nextEvents);
+        toast.success('Event updated successfully!', {
+          description: updatedData.title ? `Updated details for ${updatedData.title}` : 'Changes saved.',
+        });
+        return nextEvents;
+      } catch (err) {
+        toast.error('Cloud DB Update Failed', {
+          description: err.message || 'Unable to update JSONBin. Changes were not saved.',
+        });
+        throw err;
+      } finally {
+        setMutatingId(null);
+      }
     },
-    [setEvents]
+    [events, setEvents, setMutatingId]
   );
 
-  // Toggle RSVP status for current user ID in the event's rsvps array
+  // Toggle RSVP status for current user ID - directly persists to JSONBin
   const toggleRsvp = useCallback(
-    (id) => {
+    async (id) => {
       const target = events.find((e) => String(e.id) === String(id));
       if (!target) return;
 
@@ -97,20 +133,33 @@ export function useEvents() {
         return;
       }
 
+      setMutatingId(id);
       const isCurrentlyGoing = Array.isArray(target.rsvps) && target.rsvps.includes(currentUserId);
-      setEvents((prevEvents) => toggleEventRsvp(prevEvents, id, currentUserId));
+      const nextEvents = toggleEventRsvp(events, id, currentUserId);
 
-      if (isCurrentlyGoing) {
-        toast.info('RSVP cancelled', {
-          description: `You are no longer attending "${target.title}".`,
+      try {
+        const updated = await saveEvents(nextEvents);
+        setEvents(Array.isArray(updated) ? updated : nextEvents);
+
+        if (isCurrentlyGoing) {
+          toast.info('RSVP cancelled', {
+            description: `You are no longer attending "${target.title}".`,
+          });
+        } else {
+          toast.success('RSVP confirmed! 🎉', {
+            description: `You're attending "${target.title}".`,
+          });
+        }
+      } catch (err) {
+        toast.error('Cloud DB RSVP Failed', {
+          description: err.message || 'Unable to sync RSVP with JSONBin.',
         });
-      } else {
-        toast.success('RSVP confirmed! 🎉', {
-          description: `You're attending "${target.title}".`,
-        });
+        throw err;
+      } finally {
+        setMutatingId(null);
       }
     },
-    [events, setEvents, currentUserId]
+    [events, setEvents, currentUserId, setMutatingId]
   );
 
   return {
@@ -127,5 +176,9 @@ export function useEvents() {
     editEvent,
     toggleRsvp,
     setEvents,
+    loading,
+    error,
+    mutatingId,
+    refreshEvents,
   };
 }

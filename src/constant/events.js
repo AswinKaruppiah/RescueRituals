@@ -1,5 +1,3 @@
-import eventsData from '../data/events.json';
-
 export const CATEGORY_OPTIONS = [
   'Animal Rescue',
   'Wellness',
@@ -17,5 +15,4 @@ export const CATEGORY_OPTIONS = [
   'Youth & Education',
 ];
 
-export const DUMMY_EVENTS = eventsData;
 

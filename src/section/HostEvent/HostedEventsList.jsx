@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, Edit3, Users, ExternalLink, CalendarPlus } fro
 import { Link } from 'react-router-dom';
 import { isEventClosed } from '../../services/eventOperations';
 
-export default function HostedEventsList({ events = [], onEditEvent, onOpenCreate }) {
+export default function HostedEventsList({ events = [], onEditEvent, onOpenCreate, loading = false }) {
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 sm:p-7 shadow-2xl space-y-6">
       {/* Section Header */}
@@ -13,7 +13,7 @@ export default function HostedEventsList({ events = [], onEditEvent, onOpenCreat
             Organizer Portal
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-white">
-            Your Hosted Events ({events.length})
+            Your Hosted Events ({loading ? '...' : events.length})
           </h2>
         </div>
         {onOpenCreate && (
@@ -27,8 +27,25 @@ export default function HostedEventsList({ events = [], onEditEvent, onOpenCreat
         )}
       </div>
 
-      {/* Events List / Empty State */}
-      {events.length === 0 ? (
+      {/* Loading Skeletons */}
+      {loading && events.length === 0 ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="p-4 rounded-xl bg-neutral-950/80 border border-neutral-800/80 flex gap-4 items-center animate-pulse"
+            >
+              <div className="w-16 h-16 rounded-xl bg-neutral-800 flex-shrink-0"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-1/2 bg-neutral-800 rounded"></div>
+                <div className="h-3 w-1/3 bg-neutral-800/60 rounded"></div>
+              </div>
+              <div className="h-8 w-20 bg-neutral-800 rounded-lg"></div>
+            </div>
+          ))}
+        </div>
+      ) : events.length === 0 ? (
+        /* Empty State */
         <div className="py-12 px-4 text-center rounded-xl bg-neutral-950/50 border border-neutral-800/80 space-y-3">
           <div className="w-12 h-12 mx-auto rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400">
             <CalendarPlus className="w-6 h-6" />

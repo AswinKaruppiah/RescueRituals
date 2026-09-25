@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import RsvpConfirmModal from '../../components/Modal/RsvpConfirmModal';
-import { Users, CheckCircle, Crown } from 'lucide-react';
+import { Users, CheckCircle, Crown, Loader2 } from 'lucide-react';
 
-export default function RsvpCard({ event, onRsvpToggle }) {
+export default function RsvpCard({ event, onRsvpToggle, isUpdating = false }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleButtonClick = () => {
-    if (event.isHost) return;
+    if (event.isHost || isUpdating) return;
     if (!event.isGoing) {
       setIsOpen(true);
     } else {
@@ -58,14 +58,19 @@ export default function RsvpCard({ event, onRsvpToggle }) {
           </div>
         ) : (
           <button
+            type="button"
+            disabled={isUpdating}
             onClick={handleButtonClick}
-            className={`w-full py-3.5 rounded-xl text-sm font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
+            className={`w-full py-3.5 rounded-xl text-sm font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${
               event.isGoing
                 ? 'bg-white text-black hover:bg-neutral-200 shadow-lg'
                 : 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
             }`}
           >
-            {event.isGoing ? (
+            {isUpdating && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isUpdating ? (
+              'Syncing with Cloud...'
+            ) : event.isGoing ? (
               <>
                 <CheckCircle className="w-4 h-4" />
                 RSVP Confirmed (Click to Cancel)

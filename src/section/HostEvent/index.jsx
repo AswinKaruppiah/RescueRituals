@@ -7,7 +7,18 @@ import HostEventModal from '../../components/Modal/HostEventModal';
 import { useEvents } from '../../hooks/useEvents';
 
 export default function HostEvent() {
-  const { userEvents, comingEvents, hostMetrics, addEvent, editEvent, toggleRsvp } = useEvents();
+  const {
+    userEvents,
+    comingEvents,
+    hostMetrics,
+    addEvent,
+    editEvent,
+    toggleRsvp,
+    loading,
+    error,
+    mutatingId,
+    refreshEvents,
+  } = useEvents();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
 
@@ -30,14 +41,20 @@ export default function HostEvent() {
     toggleRsvp(event.id);
   };
 
-  const handleFormSubmit = (formData) => {
-    if (editingEvent) {
-      editEvent(editingEvent.id, formData);
-    } else {
-      addEvent(formData);
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (editingEvent) {
+        await editEvent(editingEvent.id, formData);
+      } else {
+        await addEvent(formData);
+      }
+      handleCloseModal();
+    } catch {
+      // Modal stays open so user can retry without losing their form data
     }
-    handleCloseModal();
   };
+
+  const isSubmitting = mutatingId === 'create' || (editingEvent && mutatingId === editingEvent.id);
 
   return (
     <div className="min-h-screen pb-24 relative">
@@ -45,7 +62,20 @@ export default function HostEvent() {
       <HeroBanner />
 
       {/* Main Management Layout: 70/30 Split */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-10 space-y-6">
+        {/* Error Alert / Retry Banner */}
+        {error && (
+          <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/80 text-rose-300 text-xs flex items-center justify-between">
+            <span>⚠️ {error}</span>
+            <button
+              onClick={refreshEvents}
+              className="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white rounded-lg font-bold text-xs transition cursor-pointer"
+            >
+              Retry Sync
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column (70%): HostMetrics & HostedEventsList */}
@@ -59,6 +89,7 @@ export default function HostEvent() {
               events={userEvents}
               onEditEvent={handleEdit}
               onOpenCreate={handleOpenCreateModal}
+              loading={loading}
             />
           </div>
 
@@ -67,6 +98,8 @@ export default function HostEvent() {
             <ComingEventsList
               events={comingEvents}
               onCancelRsvp={handleCancelRsvp}
+              mutatingId={mutatingId}
+              loading={loading}
             />
           </div>
 
@@ -79,6 +112,7 @@ export default function HostEvent() {
         onClose={handleCloseModal}
         isEditing={Boolean(editingEvent)}
         editingEvent={editingEvent}
+        isSubmitting={isSubmitting}
         onSubmit={handleFormSubmit}
       />
     </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Calendar, MapPin, ExternalLink, UserCheck, XCircle, Compass } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink, UserCheck, XCircle, Compass, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function ComingEventsList({ events = [], onCancelRsvp }) {
+export default function ComingEventsList({ events = [], onCancelRsvp, mutatingId = null, loading = false }) {
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 sm:p-6 shadow-2xl space-y-5">
       {/* Header */}
@@ -12,7 +12,7 @@ export default function ComingEventsList({ events = [], onCancelRsvp }) {
             Attending Portal
           </span>
           <h2 className="text-lg sm:text-xl font-black text-white">
-            I'm Coming ({events.length})
+            I'm Coming ({loading ? '...' : events.length})
           </h2>
         </div>
         <div className="p-2 bg-neutral-800 rounded-xl text-emerald-400">
@@ -20,8 +20,27 @@ export default function ComingEventsList({ events = [], onCancelRsvp }) {
         </div>
       </div>
 
-      {/* Events List / Empty State */}
-      {events.length === 0 ? (
+      {/* Loading Skeletons */}
+      {loading && events.length === 0 ? (
+        <div className="space-y-3">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="p-3.5 rounded-xl bg-neutral-950/80 border border-neutral-800/80 space-y-2.5 animate-pulse"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-lg bg-neutral-800 flex-shrink-0"></div>
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 w-1/3 bg-neutral-800 rounded"></div>
+                  <div className="h-4 w-4/5 bg-neutral-800 rounded"></div>
+                  <div className="h-3 w-1/2 bg-neutral-800/60 rounded"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : events.length === 0 ? (
+        /* Empty State */
         <div className="py-10 px-4 text-center rounded-xl bg-neutral-950/50 border border-neutral-800/80 space-y-3">
           <div className="w-10 h-10 mx-auto rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-500">
             <Compass className="w-5 h-5" />
@@ -89,11 +108,22 @@ export default function ComingEventsList({ events = [], onCancelRsvp }) {
 
                 <button
                   type="button"
+                  disabled={mutatingId === evt.id}
                   onClick={() => onCancelRsvp && onCancelRsvp(evt)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-neutral-800/80 hover:bg-rose-950/40 hover:text-rose-300 text-neutral-300 text-[11px] font-medium border border-neutral-700 hover:border-rose-800/60 transition active:scale-95 cursor-pointer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-neutral-800/80 hover:bg-rose-950/40 hover:text-rose-300 text-neutral-300 text-[11px] font-medium border border-neutral-700 hover:border-rose-800/60 transition active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Cancel RSVP"
                 >
-                  <XCircle className="w-3 h-3" /> Cancel
+                  {mutatingId === evt.id ? (
+                    <>
+                      <Loader2 className="w-3 h-3 animate-spin text-rose-400" />
+                      <span>Cancelling...</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-3 h-3" />
+                      <span>Cancel</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

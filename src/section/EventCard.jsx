@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Crown } from 'lucide-react';
+import { Calendar, MapPin, Users, Crown, Loader2 } from 'lucide-react';
 
-export default function EventCard({ event, onRsvpToggle }) {
+export default function EventCard({ event, onRsvpToggle, isUpdating = false }) {
   const navigate = useNavigate();
 
   return (
@@ -59,17 +59,24 @@ export default function EventCard({ event, onRsvpToggle }) {
           </div>
         ) : (
           <button
+            type="button"
+            disabled={isUpdating}
             onClick={(e) => {
               e.stopPropagation();
               onRsvpToggle && onRsvpToggle(event.id);
             }}
-            className={`w-full py-2.5 rounded-xl text-xs font-bold transition duration-200 active:scale-95 ${
+            className={`w-full py-2.5 rounded-xl text-xs font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed ${
               event.isGoing
                 ? 'bg-white text-black hover:bg-neutral-200'
                 : 'bg-neutral-800 text-white hover:bg-neutral-700 border border-neutral-700'
             }`}
           >
-            {event.isGoing ? '✓ RSVP Confirmed' : 'RSVP Now'}
+            {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {isUpdating
+              ? 'Updating...'
+              : event.isGoing
+              ? '✓ RSVP Confirmed'
+              : 'RSVP Now'}
           </button>
         )}
       </div>

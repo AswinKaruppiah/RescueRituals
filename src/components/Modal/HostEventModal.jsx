@@ -14,6 +14,7 @@ import {
   Users,
   IndianRupee,
   X,
+  Loader2,
 } from 'lucide-react';
 
 export default function HostEventModal({
@@ -21,6 +22,7 @@ export default function HostEventModal({
   onClose,
   isEditing = false,
   editingEvent = null,
+  isSubmitting = false,
   onSubmit,
 }) {
   const [formData, setFormData] = useState({
@@ -283,16 +285,25 @@ export default function HostEventModal({
         <button
           type="button"
           onClick={onClose}
-          className="px-5 py-2.5 rounded-xl bg-neutral-800 text-neutral-300 hover:bg-neutral-700 text-xs font-semibold cursor-pointer transition active:scale-95"
+          disabled={isSubmitting}
+          className="px-5 py-2.5 rounded-xl bg-neutral-800 text-neutral-300 hover:bg-neutral-700 text-xs font-semibold cursor-pointer transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
           form="host-event-modal-form"
-          className="px-6 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs cursor-pointer shadow-md transition active:scale-95"
+          disabled={isSubmitting}
+          className="px-6 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs cursor-pointer shadow-md transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
         >
-          {isEditing ? 'Save Changes' : 'Publish Event'}
+          {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {isSubmitting
+            ? isEditing
+              ? 'Saving...'
+              : 'Publishing...'
+            : isEditing
+            ? 'Save Changes'
+            : 'Publish Event'}
         </button>
       </div>
     </BaseModal>
