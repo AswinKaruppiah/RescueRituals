@@ -1,64 +1,73 @@
 # 🐾 RescueRituals — Events Module (Frontend)
 
-An engaging, high-performance **Events Module UI** built for consumer platforms. Discover, RSVP, filter, create, and manage community gatherings, animal rescue drives, sound healing rituals, and developer workshops.
+An engaging, high-performance, and responsive **Events Module UI** built for consumer platforms. Discover, RSVP, filter, create, and manage community gatherings, animal rescue drives, sound healing rituals, and workshops with real-time cloud persistence.
 
 ---
 
-## 🚀 Live Demo & Deployment
+## 🚀 Live Demo & Links
 
-- **Live URL**: *(Deploy to Vercel / Netlify with 1 click)*
-- **GitHub Repository**: `d:\Personal_WS\Assignments\RescueRituals`
-- **Video Walkthrough**: *(Loom walkthrough covering UI/UX, state management, and architecture)*
+- **Live URL**: [https://rescuerituals-assignment.vercel.app/](https://rescuerituals-assignment.vercel.app/)
+- **GitHub Repository**: `[Insert your GitHub repo URL here]`
+- **Video Walkthrough**: `[Insert Loom walkthrough link here]`
 
 ---
 
-## ✨ Features & Scope Breakdown
+## 🌟 Key Features & Scope Breakdown
 
 ### 1. 🔍 Event Browse & Discovery View (`/`)
-- **Category Filter Pills**: Filter across *Animal Rescue & Welfare*, *Wellness & Rituals*, *Workshops & Tech*, *Eco & Nature*, *Music & Arts*, and *Community & Social*.
-- **Multi-parameter Search Bar**: Instant real-time search across event titles, topics, city, descriptions, and tags.
-- **Format Toggle**: Filter by *In-Person*, *Virtual Livestream*, or *All Formats*.
-- **Date Presets**: Quick filter tabs for *Today*, *This Week*, *This Weekend*, *Upcoming*, and *Anytime*.
-- **Custom Sorting**: Sort by earliest date, latest date, popularity, or spots remaining.
-- **Featured Spotlights**: Highlighted hero carousel for flagship community events.
+- **Category Filter Pills**: Filter across *All*, *Animal Rescue*, *Wellness*, *Workshops*, *Eco & Nature*, *Music & Arts*, and *Community*.
+- **Search Bar**: Instant real-time filtering across titles, descriptions, categories, and locations.
+- **Hero Carousel Banner**: Dynamic featured gathering carousel with indicator dots, smooth navigation, and category tags.
+- **Card-Level Quick RSVP**: Attend or cancel reservations directly from event cards with real-time spot updates.
+- **Capacity Indicators**: Clear display of spots filled (`{attendeesCount} / {capacity}`), with a **`SLOTS FULL`** chip and disabled buttons when capacity is reached.
+- **Skeleton Loaders & Empty States**: Polished loading skeletons during cloud fetch and intuitive zero-data screens.
 
 ### 2. 📄 Comprehensive Event Detail View (`/events/:id`)
-- **Media Hero & Badges**: High-res imagery, format badge, category tag, and pricing indicator.
-- **Interactive Sticky RSVP Box**: Live spots counter, capacity progress bar, and 1-click status switcher (*Going*, *Interested*, *Cancelled*).
-- **Date & Calendar Integration**: One-click **Export to Calendar (`.ics`)** compatible with Google Calendar, Apple Calendar, and Outlook.
-- **Agenda & Schedule Timeline**: Formatted chronological schedule for multi-session workshops.
-- **Verified Host / Organizer Card**: Host bio, verified status badge, and organizer contact details.
-- **Live Attendee Avatars**: Real-time list of who is attending.
-- **Quick Share & Link Copy**: Instant clipboard sharing with feedback notifications.
+- **Media Hero Banner**: Visual header with full-bleed imagery and quick back navigation.
+- **Detailed Gathering Overview**: Title, category, full description, formatted date/time, and complete location details.
+- **Live Attendance & Capacity Progress**: Visual capacity progress bar that dynamically fills and turns **red** when full.
+- **RSVP Confirmation Modal**: Confirmation dialog before locking in reservations.
+- **Share Event**: 1-click clipboard link copying with instant feedback toast notifications.
+- **404 Handling**: Dedicated "Event Not Found" screen if navigating to an invalid or deleted event ID.
 
-### 3. ✍️ Create & Edit Event Form (`/create` & `/edit/:id`)
-- **Full CRUD Support**: Create new listings or update existing events with immediate UI updates.
-- **Form Fields**:
-  - Event Title & Short Catchy Tagline
-  - Category selector & Format toggle (In-Person venue vs. Virtual streaming link)
-  - Full multi-line description
-  - Date, Start Time, and End Time
-  - Venue name, street address, and city (or Virtual meeting link)
-  - 6 One-Click Unsplash cover presets + custom image URL support
-  - Capacity (max spots), entry pricing, and custom tags
-- **Live Preview Tab**: Interactive preview allowing organizers to inspect their event before publishing.
-- **Validation**: Form error checks for required fields.
+### 3. ✍️ Organizer & Host Portal (`/host`)
+- **Host Metrics Dashboard**: Summary cards displaying *Total Hosted Events*, *Open Listings*, and *Closed Events*.
+- **Create / Edit Event Modal**:
+  - Event Title & Full Description
+  - Date & Time pickers
+  - Venue / Location address
+  - Category dropdown
+  - Capacity (max attendees) & Admission Pricing (Free / Paid)
+  - Cover Image URL with 4 quick Unsplash presets
+- **Full Cloud CRUD**: Add new gatherings or update existing listings with instant synchronization to the cloud database.
+- **"I'm Coming" Attendee Portal**: Dedicated tab listing all events the current user has RSVP'd to, with 1-click cancellation.
 
-### 4. 🎟️ Interactive RSVP & Attendee System
-- **Quick RSVP Modal**: Modal with attendee name, email, dietary/custom note, and instant calendar download.
-- **Optimistic State Updates**: Zero-latency UI updates to attendee counts and spots remaining.
-- **My RSVPs Dashboard (`/my-rsvps`)**: Dedicated view of confirmed reservations and saved bookmarks.
+### 4. 🎟️ RSVP & Identity System
+- **Persistent User ID**: Automatically generates and stores a persistent user identifier in `localStorage` (`usr_...`).
+- **Host Self-RSVP Protection**: Hosts cannot RSVP to their own listings (`You're the Host` badge is shown).
+- **Slot Capacity Guard**: Prevents new RSVPs when max capacity is reached while allowing attendees to cancel their spot.
+
+---
+
+## ☁️ Cloud Database Architecture
+
+The application connects to a live RESTful cloud database powered by **JSONBin.io (v3)**:
+
+- **Environment Config**: Strictly bound via `VITE_JSONBIN_BIN_ID` and `VITE_JSONBIN_API_KEY`.
+- **Granular Loading State (`mutatingId`)**: Disables and shows spinners exclusively on the active button/action without blocking the global interface.
+- **Toast Feedback**: Real-time notifications for success, capacity errors, and network alerts.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React 18 (TypeScript)
-- **Styling**: Tailwind CSS (with custom glassmorphism, responsive grids, and subtle glow effects)
-- **Icons**: Lucide React
-- **Routing**: React Router v6
-- **Data & Persistence**: `EventService` layer simulating an asynchronous REST backend API with `localStorage` persistence and rich seed data.
+- **Framework**: React 18 (SPA)
 - **Build Tool**: Vite 5
+- **Routing**: React Router DOM (v6)
+- **Styling**: Tailwind CSS & Vanilla CSS (Dark Glassmorphism UI)
+- **UI Components & Icons**: Lucide React & HeroUI (Modals)
+- **Cloud Database**: JSONBin.io v3 REST API
+- **State Management**: React Context API (`EventContext`) + Custom Hook (`useEvents`)
 
 ---
 
@@ -71,30 +80,38 @@ cd RescueRituals
 npm install
 ```
 
-### 2. Start Dev Server
+### 2. Configure Environment Variables
+Create a `.env` file in the root directory (refer to `.env.example`):
+```env
+VITE_JSONBIN_BIN_ID="your_jsonbin_bin_id"
+VITE_JSONBIN_API_KEY="your_jsonbin_access_key"
+```
+
+### 3. Start Development Server
 ```bash
 npm run dev
 ```
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 3. Production Build
+### 4. Production Build & Verification
 ```bash
 npm run build
 ```
 
 ---
 
-## 🌐 Deploying to Vercel / Netlify
+## 🌐 Deployment (Vercel / Netlify)
 
-### Option A: Vercel
-1. Push this repository to GitHub.
-2. Go to [Vercel](https://vercel.com) and click **"Add New Project"**.
-3. Import this repository.
-4. Framework Preset: **Vite**.
-5. Click **Deploy**.
+### Vercel Deployment:
+1. Push the repository to GitHub.
+2. In Vercel, click **Add New Project** and import the repository.
+3. In **Environment Variables**, add:
+   - `VITE_JSONBIN_BIN_ID` = `your_bin_id`
+   - `VITE_JSONBIN_API_KEY` = `your_api_key`
+4. Click **Deploy**.
 
-### Option B: Netlify
-1. Go to [Netlify](https://netlify.com) and select **"Import from Git"**.
-2. Build command: `npm run build`
-3. Publish directory: `dist`
-4. Click **Deploy Site**.
+### Netlify Deployment:
+1. Select **Import from Git** in Netlify.
+2. Set Build Command to `npm run build` and Publish directory to `dist`.
+3. Under **Site Configuration > Environment Variables**, add your `VITE_JSONBIN_BIN_ID` and `VITE_JSONBIN_API_KEY`.
+4. Deploy site.
