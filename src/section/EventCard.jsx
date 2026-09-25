@@ -1,9 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users } from 'lucide-react';
 
 export default function EventCard({ event, onRsvpToggle }) {
+  const navigate = useNavigate();
+
   return (
-    <div className="group bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden flex flex-col justify-between">
+    <div
+      onClick={() => navigate(`/events/${event.id}`)}
+      className="group bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden flex flex-col justify-between cursor-pointer"
+    >
       
       {/* Top Image */}
       <div className="relative h-48 w-full overflow-hidden">
@@ -52,7 +58,10 @@ export default function EventCard({ event, onRsvpToggle }) {
 
         {/* RSVP Action */}
         <button
-          onClick={() => onRsvpToggle && onRsvpToggle(event.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRsvpToggle && onRsvpToggle(event.id);
+          }}
           className={`w-full py-2.5 rounded-xl text-xs font-bold transition duration-200 active:scale-95 ${
             event.isGoing
               ? 'bg-white text-black hover:bg-neutral-200'
