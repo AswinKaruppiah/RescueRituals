@@ -57,6 +57,12 @@ export const toggleEventRsvp = (events, id, userId) => {
 
     const rsvps = Array.isArray(evt.rsvps) ? evt.rsvps : [];
     const isGoing = rsvps.includes(uid);
+
+    // Prevent new RSVP if capacity is reached
+    if (!isGoing && evt.capacity > 0 && rsvps.length >= evt.capacity) {
+      return evt;
+    }
+
     const nextRsvps = isGoing ? rsvps.filter((u) => u !== uid) : [...rsvps, uid];
 
     return {
