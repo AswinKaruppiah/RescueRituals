@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { toast } from '../../components/Toast';
 import HeroBanner from './HeroBanner';
 import HostMetrics from './HostMetrics';
 import HostedEventsList from './HostedEventsList';
@@ -29,16 +28,13 @@ export default function HostEvent() {
 
   const handleCancelRsvp = (event) => {
     toggleRsvp(event.id);
-    toast.info(`RSVP cancelled for "${event.title}"`);
   };
 
   const handleFormSubmit = (formData) => {
     if (editingEvent) {
       editEvent(editingEvent.id, formData);
-      toast.success('Event updated successfully!');
     } else {
       addEvent(formData);
-      toast.success('Event created & published successfully!');
     }
     handleCloseModal();
   };

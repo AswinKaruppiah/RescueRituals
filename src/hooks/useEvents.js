@@ -1,5 +1,6 @@
 import { useContext, useCallback, useMemo } from 'react';
 import { EventContext } from '../context/EventContext';
+import { toast } from '../components/Toast';
 import {
   getEventById,
   addEventItem,
@@ -65,6 +66,9 @@ export function useEvents() {
   const addEvent = useCallback(
     (newEventData) => {
       setEvents((prevEvents) => addEventItem(prevEvents, newEventData, currentUserId));
+      toast.success('Event hosted successfully!', {
+        description: newEventData.title || 'Your new event is now live.',
+      });
     },
     [setEvents, currentUserId]
   );
@@ -73,6 +77,9 @@ export function useEvents() {
   const editEvent = useCallback(
     (id, updatedData) => {
       setEvents((prevEvents) => editEventItem(prevEvents, id, updatedData));
+      toast.success('Event updated successfully!', {
+        description: updatedData.title ? `Updated details for ${updatedData.title}` : 'Changes saved.',
+      });
     },
     [setEvents]
   );
@@ -80,9 +87,30 @@ export function useEvents() {
   // Toggle RSVP status for current user ID in the event's rsvps array
   const toggleRsvp = useCallback(
     (id) => {
+      const target = events.find((e) => String(e.id) === String(id));
+      if (!target) return;
+
+      if (target.hostId && target.hostId === currentUserId) {
+        toast.info("You're the host of this event", {
+          description: 'Hosts cannot RSVP to their own listings.',
+        });
+        return;
+      }
+
+      const isCurrentlyGoing = Array.isArray(target.rsvps) && target.rsvps.includes(currentUserId);
       setEvents((prevEvents) => toggleEventRsvp(prevEvents, id, currentUserId));
+
+      if (isCurrentlyGoing) {
+        toast.info('RSVP cancelled', {
+          description: `You are no longer attending "${target.title}".`,
+        });
+      } else {
+        toast.success('RSVP confirmed! 🎉', {
+          description: `You're attending "${target.title}".`,
+        });
+      }
     },
-    [setEvents, currentUserId]
+    [events, setEvents, currentUserId]
   );
 
   return {

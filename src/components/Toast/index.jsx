@@ -3,23 +3,12 @@ import { Toaster as SonnerToaster, toast } from 'sonner';
 
 export { toast };
 
-export function ToastProvider({ placement = 'top-right' }) {
-  // Convert placement prop to sonner format
-  const positionMap = {
-    'top-right': 'top-right',
-    'top-left': 'top-left',
-    'top-center': 'top-center',
-    'bottom-right': 'bottom-right',
-    'bottom-left': 'bottom-left',
-    'bottom-center': 'bottom-center',
-  };
-
+export function ToastProvider() {
   return (
     <SonnerToaster
-      position={positionMap[placement] || 'top-right'}
+      position="bottom-center"
       theme="dark"
       richColors
-      closeButton
       toastOptions={{
         style: {
           background: '#171717',
@@ -32,3 +21,4 @@ export function ToastProvider({ placement = 'top-right' }) {
 }
 
 export { SonnerToaster as Toaster };
+

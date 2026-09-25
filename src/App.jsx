@@ -10,7 +10,7 @@ import EventDetail from './section/EventDetail';
 export default function App() {
   return (
     <EventProvider>
-      <ToastProvider placement="top-right" />
+      <ToastProvider />
       <Router>
         <ScrollToTop />
         <div className="min-h-screen bg-[#262626] text-white">
