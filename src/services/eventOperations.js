@@ -11,7 +11,7 @@ export const getOrCreateUserId = () => {
 
 export const isEventClosed = (event) => {
   if (!event) return false;
-  const count = Array.isArray(event.rsvps) ? event.rsvps.length : (event.attendeesCount || 0);
+  const count = typeof event.attendeesCount === 'number' ? event.attendeesCount : (Array.isArray(event.rsvps) ? event.rsvps.length : 0);
   const isFull = event.capacity > 0 && count >= event.capacity;
   const isExpired = event.date && event.date < new Date().toISOString().split('T')[0];
   return Boolean(isFull || isExpired);
@@ -53,22 +53,25 @@ export const toggleEventRsvp = (events, id, userId) => {
   const uid = userId || getOrCreateUserId();
 
   return events.map((evt) => {
-    if (String(evt.id) !== String(id) || evt.hostId === uid) return evt;
+    if (String(evt.id) !== String(id)) return evt;
+    if (evt.hostId === uid) return evt;
 
-    const rsvps = Array.isArray(evt.rsvps) ? evt.rsvps : [];
+    const rsvps = Array.isArray(evt.rsvps) ? [...evt.rsvps] : [];
     const isGoing = rsvps.includes(uid);
 
     // Prevent new RSVP if capacity is reached
-    if (!isGoing && evt.capacity > 0 && rsvps.length >= evt.capacity) {
+    const currentCount = typeof evt.attendeesCount === 'number' ? evt.attendeesCount : rsvps.length;
+    if (!isGoing && evt.capacity > 0 && currentCount >= evt.capacity) {
       return evt;
     }
 
     const nextRsvps = isGoing ? rsvps.filter((u) => u !== uid) : [...rsvps, uid];
+    const nextCount = isGoing ? Math.max(0, currentCount - 1) : currentCount + 1;
 
     return {
       ...evt,
       rsvps: nextRsvps,
-      attendeesCount: nextRsvps.length,
+      attendeesCount: nextCount,
     };
   });
 };

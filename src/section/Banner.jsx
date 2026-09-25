@@ -6,23 +6,25 @@ export default function Banner() {
   const { events } = useEvents();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (!events || events.length === 0) return null;
+  const featuredEvents = (events || []).slice(0, 5);
 
-  const safeIndex = currentIndex % events.length;
+  if (featuredEvents.length === 0) return null;
+
+  const safeIndex = currentIndex % featuredEvents.length;
 
   const prevSlide = () => {
     setCurrentIndex((prev) =>
-      prev === 0 ? events.length - 1 : prev - 1,
+      prev === 0 ? featuredEvents.length - 1 : prev - 1,
     );
   };
 
   const nextSlide = () => {
     setCurrentIndex((prev) =>
-      prev === events.length - 1 ? 0 : prev + 1,
+      prev === featuredEvents.length - 1 ? 0 : prev + 1,
     );
   };
 
-  const event = events[safeIndex];
+  const event = featuredEvents[safeIndex];
 
   return (
     <div className="relative w-full">
@@ -60,7 +62,7 @@ export default function Banner() {
         {/* Left Arrow Button */}
         <button
           onClick={prevSlide}
-          className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-white hover:text-black text-white border border-neutral-700 transition z-10"
+          className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-white hover:text-black text-white border border-neutral-700 transition z-10 cursor-pointer"
           aria-label="Previous event"
         >
           <ChevronLeft className="w-6 h-6" />
@@ -69,22 +71,22 @@ export default function Banner() {
         {/* Right Arrow Button */}
         <button
           onClick={nextSlide}
-          className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-white hover:text-black text-white border border-neutral-700 transition z-10"
+          className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-white hover:text-black text-white border border-neutral-700 transition z-10 cursor-pointer"
           aria-label="Next event"
         >
           <ChevronRight className="w-6 h-6" />
         </button>
 
-        {/* Indicator Dots */}
+        {/* Indicator Dots (Max 5) */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-          {events.map((_, index) => (
+          {featuredEvents.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`h-2 rounded-full transition-all ${
+              className={`h-2 rounded-full transition-all cursor-pointer ${
                 safeIndex === index
                   ? "w-8 bg-white"
-                  : "w-2 bg-neutral-500/60"
+                  : "w-2 bg-neutral-500/60 hover:bg-white/70"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
