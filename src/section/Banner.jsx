@@ -1,23 +1,28 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react";
-import { DUMMY_EVENTS } from "../constant/events";
+import { useEvents } from "../hooks/useEvents";
 
 export default function Banner() {
+  const { events } = useEvents();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  if (!events || events.length === 0) return null;
+
+  const safeIndex = currentIndex % events.length;
 
   const prevSlide = () => {
     setCurrentIndex((prev) =>
-      prev === 0 ? DUMMY_EVENTS.length - 1 : prev - 1,
+      prev === 0 ? events.length - 1 : prev - 1,
     );
   };
 
   const nextSlide = () => {
     setCurrentIndex((prev) =>
-      prev === DUMMY_EVENTS.length - 1 ? 0 : prev + 1,
+      prev === events.length - 1 ? 0 : prev + 1,
     );
   };
 
-  const event = DUMMY_EVENTS[currentIndex];
+  const event = events[safeIndex] || events[0];
 
   return (
     <div className="relative w-full">
@@ -73,12 +78,12 @@ export default function Banner() {
 
         {/* Indicator Dots */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-          {DUMMY_EVENTS.map((_, index) => (
+          {events.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`h-2 rounded-full transition-all ${
-                currentIndex === index
+                safeIndex === index
                   ? "w-8 bg-white"
                   : "w-2 bg-neutral-500/60"
               }`}

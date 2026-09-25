@@ -1,27 +1,9 @@
-import React, { useState } from "react";
-import { DUMMY_EVENTS } from "../constant/events";
+import React from "react";
+import { useEvents } from "../hooks/useEvents";
 import EventCard from "./EventCard";
 
 export default function EventList() {
-  const [events, setEvents] = useState(DUMMY_EVENTS);
-
-  const handleRsvpToggle = (eventId) => {
-    setEvents((prev) =>
-      prev.map((e) => {
-        if (e.id === eventId) {
-          const newStatus = !e.isGoing;
-          return {
-            ...e,
-            isGoing: newStatus,
-            attendeesCount: newStatus
-              ? e.attendeesCount + 1
-              : e.attendeesCount - 1,
-          };
-        }
-        return e;
-      }),
-    );
-  };
+  const { events, toggleRsvp } = useEvents();
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -45,7 +27,7 @@ export default function EventList() {
           <EventCard
             key={event.id}
             event={event}
-            onRsvpToggle={handleRsvpToggle}
+            onRsvpToggle={toggleRsvp}
           />
         ))}
       </div>

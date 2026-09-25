@@ -11,7 +11,6 @@ export const DUMMY_EVENTS = [
     capacity: 150,
     attendeesCount: 94,
     price: 'Free',
-    organizer: 'Rescue Rituals Foundation',
     isGoing: false,
   },
   {
@@ -26,7 +25,6 @@ export const DUMMY_EVENTS = [
     capacity: 40,
     attendeesCount: 38,
     price: '₹499',
-    organizer: 'Prana Resonance Collective',
     isGoing: false,
   },
   {
@@ -41,7 +39,6 @@ export const DUMMY_EVENTS = [
     capacity: 250,
     attendeesCount: 180,
     price: 'Free',
-    organizer: 'DevCraft Guild',
     isGoing: false,
   },
   {
@@ -56,7 +53,6 @@ export const DUMMY_EVENTS = [
     capacity: 80,
     attendeesCount: 65,
     price: 'Free',
-    organizer: 'Green Bengaluru Action',
     isGoing: false,
   },
   {
@@ -71,7 +67,6 @@ export const DUMMY_EVENTS = [
     capacity: 50,
     attendeesCount: 47,
     price: '₹250',
-    organizer: 'Living Room Sessions',
     isGoing: false,
   },
   {
@@ -86,7 +81,6 @@ export const DUMMY_EVENTS = [
     capacity: 30,
     attendeesCount: 22,
     price: '₹850',
-    organizer: 'Clay & Soul Guild',
     isGoing: false,
   }
 ];

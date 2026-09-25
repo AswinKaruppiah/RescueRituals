@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import RsvpConfirmModal from '../../components/Modal/RsvpConfirmModal';
 import { Users, CheckCircle } from 'lucide-react';
 
 export default function RsvpCard({ event, onRsvpToggle }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleButtonClick = () => {
+    if (!event.isGoing) {
+      setIsOpen(true);
+    } else {
+      onRsvpToggle();
+    }
+  };
+
+  const handleConfirmModal = () => {
+    onRsvpToggle();
+    setIsOpen(false);
+  };
+
   return (
     <div className="space-y-4">
       <div className="p-6 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-6 sticky top-8 shadow-2xl">
@@ -35,10 +51,10 @@ export default function RsvpCard({ event, onRsvpToggle }) {
 
         {/* Action Button */}
         <button
-          onClick={onRsvpToggle}
-          className={`w-full py-3.5 rounded-xl text-sm font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-2 ${
+          onClick={handleButtonClick}
+          className={`w-full py-3.5 rounded-xl text-sm font-bold transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
             event.isGoing
-              ? 'bg-white text-black hover:bg-neutral-200'
+              ? 'bg-white text-black hover:bg-neutral-200 shadow-lg'
               : 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
           }`}
         >
@@ -52,6 +68,14 @@ export default function RsvpCard({ event, onRsvpToggle }) {
           )}
         </button>
       </div>
+
+      {/* HeroUI RSVP Confirmation Modal */}
+      <RsvpConfirmModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        event={event}
+        onConfirm={handleConfirmModal}
+      />
     </div>
   );
 }

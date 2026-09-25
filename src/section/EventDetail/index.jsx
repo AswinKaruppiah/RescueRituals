@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { DUMMY_EVENTS } from '../../constant/events';
+import { useEvents } from '../../hooks/useEvents';
 import HeroBanner from './HeroBanner';
 import EventInfo from './EventInfo';
 import RsvpCard from './RsvpCard';
@@ -8,9 +8,9 @@ import RsvpCard from './RsvpCard';
 export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { getEvent, toggleRsvp, events } = useEvents();
 
-  const initialEvent = DUMMY_EVENTS.find((e) => e.id === id) || DUMMY_EVENTS[0];
-  const [event, setEvent] = useState(initialEvent);
+  const event = getEvent(id) || events[0];
   const [copied, setCopied] = useState(false);
 
   if (!event) {
@@ -28,12 +28,7 @@ export default function EventDetail() {
   }
 
   const handleRsvpToggle = () => {
-    const newStatus = !event.isGoing;
-    setEvent((prev) => ({
-      ...prev,
-      isGoing: newStatus,
-      attendeesCount: newStatus ? prev.attendeesCount + 1 : prev.attendeesCount - 1,
-    }));
+    toggleRsvp(event.id);
   };
 
   const handleShare = () => {

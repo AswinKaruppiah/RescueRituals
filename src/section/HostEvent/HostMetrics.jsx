@@ -12,7 +12,7 @@ export default function HostMetrics({ total = 0, openCount = 0, closedCount = 0 
         </div>
         <div className="mt-3">
           <p className="text-2xl font-black text-white">{total}</p>
-          <span className="text-[10px] text-neutral-500 uppercase tracking-wider">All Listings</span>
+          <span className="text-[10px] text-neutral-500 uppercase tracking-wider">Your Listings</span>
         </div>
       </div>
 
