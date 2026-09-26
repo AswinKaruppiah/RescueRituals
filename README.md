@@ -1,13 +1,12 @@
 # 🐾 RescueRituals — Events Module (Frontend)
 
-An engaging, high-performance, and responsive **Events Module UI** built for consumer platforms. Discover, RSVP, create, and manage community gatherings, animal rescue drives, sound healing rituals, and workshops with real-time cloud persistence.
+An engaging and responsive **Events Module UI** built for consumer platforms. Discover, RSVP, create, and manage community gatherings, animal rescue drives, sound healing rituals, and workshops with real-time cloud persistence.
 
 ---
 
 ## 🚀 Live Demo & Links
 
 - **Live URL**: [https://rescuerituals-assignment.vercel.app/](https://rescuerituals-assignment.vercel.app/)
-- **GitHub Repository**: `[Insert your GitHub repo URL here]`
 - **Video Walkthrough**: `[Insert Loom walkthrough link here]`
 
 ---
