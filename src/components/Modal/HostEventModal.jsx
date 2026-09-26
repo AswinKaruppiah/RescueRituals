@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import BaseModal from './BaseModal';
-import { CATEGORY_OPTIONS } from '../../constant/events';
+import React, { useState, useEffect } from "react";
+import { DatePicker, Select, SelectItem } from "@heroui/react";
+import { parseDate } from "@internationalized/date";
+import BaseModal from "./BaseModal";
+import { CATEGORY_OPTIONS } from "../../constant/events";
 import {
   Calendar,
   Clock,
@@ -15,7 +17,7 @@ import {
   IndianRupee,
   X,
   Loader2,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function HostEventModal({
   isOpen,
@@ -26,41 +28,41 @@ export default function HostEventModal({
   onSubmit,
 }) {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    date: '2026-10-20',
-    time: '10:00 AM - 02:00 PM',
-    location: '',
-    category: CATEGORY_OPTIONS[0] || 'Animal Rescue',
-    image: '',
-    capacity: 50,
-    price: 'Free',
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    location: "",
+    category: "",
+    image: "",
+    capacity: "",
+    price: "",
   });
 
   useEffect(() => {
     if (editingEvent) {
       setFormData({
-        title: editingEvent.title || '',
-        description: editingEvent.description || '',
-        date: editingEvent.date || '2026-10-20',
-        time: editingEvent.time || '',
-        location: editingEvent.location || '',
-        category: editingEvent.category || (CATEGORY_OPTIONS[0] || 'Animal Rescue'),
-        image: editingEvent.image || '',
-        capacity: editingEvent.capacity || 50,
-        price: editingEvent.price || 'Free',
+        title: editingEvent.title || "",
+        description: editingEvent.description || "",
+        date: editingEvent.date || "",
+        time: editingEvent.time || "",
+        location: editingEvent.location || "",
+        category: editingEvent.category || "",
+        image: editingEvent.image || "",
+        capacity: editingEvent.capacity ?? "",
+        price: editingEvent.price || "",
       });
     } else {
       setFormData({
-        title: '',
-        description: '',
-        date: '2026-10-20',
-        time: '10:00 AM - 02:00 PM',
-        location: '',
-        category: CATEGORY_OPTIONS[0] || 'Animal Rescue',
-        image: '',
-        capacity: 50,
-        price: 'Free',
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        category: "",
+        image: "",
+        capacity: "",
+        price: "",
       });
     }
   }, [editingEvent, isOpen]);
@@ -75,7 +77,23 @@ export default function HostEventModal({
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
     if (onSubmit) {
-      onSubmit(formData);
+      let formattedPrice = String(formData.price || "").trim();
+      if (
+        !formattedPrice ||
+        formattedPrice.toLowerCase() === "free" ||
+        formattedPrice === "0"
+      ) {
+        formattedPrice = "Free";
+      } else if (!formattedPrice.startsWith("₹")) {
+        // Strip out any accidental dollar signs or non-rupee symbols and add ₹
+        const cleanNumber = formattedPrice.replace(/^[$₹\s]+/, "");
+        formattedPrice = `₹${cleanNumber}`;
+      }
+
+      onSubmit({
+        ...formData,
+        price: formattedPrice,
+      });
     }
   };
 
@@ -90,14 +108,18 @@ export default function HostEventModal({
       <div className="flex items-center justify-between p-6 pb-4 border-b border-neutral-800 flex-shrink-0 bg-neutral-900">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-neutral-800 rounded-xl text-white">
-            {isEditing ? <Sparkles className="w-5 h-5" /> : <PlusCircle className="w-5 h-5" />}
+            {isEditing ? (
+              <Sparkles className="w-5 h-5" />
+            ) : (
+              <PlusCircle className="w-5 h-5" />
+            )}
           </div>
           <div>
             <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider block">
-              {isEditing ? 'Modify Listing' : 'Host Ritual'}
+              {isEditing ? "Modify Listing" : "Host Ritual"}
             </span>
             <h3 className="text-xl font-bold text-white">
-              {isEditing ? 'Edit Event Details' : 'Create New Event'}
+              {isEditing ? "Edit Event Details" : "Create New Event"}
             </h3>
           </div>
         </div>
@@ -112,19 +134,24 @@ export default function HostEventModal({
 
       {/* Scrollable Form Body */}
       <div className="p-6 py-4 overflow-y-auto flex-1">
-        <form id="host-event-modal-form" onSubmit={handleSubmit} className="space-y-4">
+        <form
+          id="host-event-modal-form"
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           {/* Title */}
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Type className="w-3.5 h-3.5 text-neutral-300" /> Event Title <span className="text-rose-400">*</span>
+                <Type className="w-3.5 h-3.5 text-neutral-300" /> Event Title{" "}
+                <span className="text-rose-400">*</span>
               </span>
             </label>
             <input
               type="text"
               required
               value={formData.title}
-              onChange={(e) => handleChange('title', e.target.value)}
+              onChange={(e) => handleChange("title", e.target.value)}
               placeholder="e.g. Community Rescue Walk & Shelter Care"
               className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
             />
@@ -134,14 +161,15 @@ export default function HostEventModal({
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <AlignLeft className="w-3.5 h-3.5 text-neutral-300" /> Description <span className="text-rose-400">*</span>
+                <AlignLeft className="w-3.5 h-3.5 text-neutral-300" />{" "}
+                Description <span className="text-rose-400">*</span>
               </span>
             </label>
             <textarea
               rows={3}
               required
               value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
+              onChange={(e) => handleChange("description", e.target.value)}
               placeholder="Describe the agenda, who should attend, and what to bring..."
               className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition resize-none"
             />
@@ -153,15 +181,34 @@ export default function HostEventModal({
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Date <span className="text-rose-400">*</span>
+                  <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Date{" "}
+                  <span className="text-rose-400">*</span>
                 </span>
               </label>
-              <input
-                type="date"
-                required
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
-                className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-white transition [color-scheme:dark]"
+              <DatePicker
+                aria-label="Event Date"
+                isRequired
+                value={formData.date ? parseDate(formData.date) : null}
+                onChange={(val) => {
+                  if (val) {
+                    handleChange(
+                      "date",
+                      `${val.year}-${String(val.month).padStart(2, "0")}-${String(val.day).padStart(2, "0")}`,
+                    );
+                  } else {
+                    handleChange("date", "");
+                  }
+                }}
+                variant="bordered"
+                classNames={{
+                  base: "w-full",
+                  inputWrapper:
+                    "!border !border-solid !border-neutral-700/80 !bg-neutral-950/80 hover:!border-neutral-500 focus-within:!border-white !rounded-xl !h-11 !min-h-[44px] !px-4 shadow-none",
+                  input: "!text-white !text-sm",
+                  popoverContent:
+                    "!bg-neutral-900 !border !border-neutral-700 !text-white !rounded-2xl !shadow-2xl dark",
+                  calendar: "dark !bg-neutral-900 !text-white",
+                }}
               />
             </div>
 
@@ -169,16 +216,17 @@ export default function HostEventModal({
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-neutral-300" /> Time <span className="text-rose-400">*</span>
+                  <Clock className="w-3.5 h-3.5 text-neutral-300" /> Time{" "}
+                  <span className="text-rose-400">*</span>
                 </span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.time}
-                onChange={(e) => handleChange('time', e.target.value)}
+                onChange={(e) => handleChange("time", e.target.value)}
                 placeholder="e.g. 10:00 AM - 02:00 PM"
-                className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
+                className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
               />
             </div>
           </div>
@@ -187,16 +235,17 @@ export default function HostEventModal({
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-neutral-300" /> Location / Venue <span className="text-rose-400">*</span>
+                <MapPin className="w-3.5 h-3.5 text-neutral-300" /> Location /
+                Venue <span className="text-rose-400">*</span>
               </span>
             </label>
             <input
               type="text"
               required
               value={formData.location}
-              onChange={(e) => handleChange('location', e.target.value)}
+              onChange={(e) => handleChange("location", e.target.value)}
               placeholder="e.g. Cubbon Park Pavilion Gardens, Bengaluru"
-              className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
+              className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
             />
           </div>
 
@@ -205,43 +254,61 @@ export default function HostEventModal({
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-neutral-300" /> Category <span className="text-rose-400">*</span>
+                  <Tag className="w-3.5 h-3.5 text-neutral-300" /> Category{" "}
+                  <span className="text-rose-400">*</span>
                 </span>
               </label>
-              <select
-                required
-                value={formData.category}
-                onChange={(e) => handleChange('category', e.target.value)}
-                className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-white transition [color-scheme:dark]"
+              <Select
+                aria-label="Category"
+                isRequired
+                selectedKeys={formData.category ? [formData.category] : []}
+                onChange={(e) => handleChange("category", e.target.value)}
+                variant="bordered"
+                placeholder="Select category"
+                classNames={{
+                  base: "w-full",
+                  trigger:
+                    "!border !border-solid !border-neutral-700/80 !bg-neutral-950/80 hover:!border-neutral-500 data-[open=true]:!border-white !rounded-xl !h-11 !min-h-[44px] !px-4 shadow-none",
+                  value: "!text-white !text-sm",
+                  popoverContent:
+                    "!bg-neutral-900 !border !border-neutral-700 !text-white !rounded-2xl !shadow-2xl dark",
+                  listbox: "dark !bg-neutral-900 !text-white",
+                }}
               >
                 {CATEGORY_OPTIONS.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <SelectItem
+                    key={cat}
+                    textValue={cat}
+                    className="!text-white hover:!bg-neutral-800 data-[selected=true]:!bg-neutral-800 !rounded-lg"
+                  >
                     {cat}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <IndianRupee className="w-3.5 h-3.5 text-neutral-300" /> Price <span className="text-rose-400">*</span>
+                  <IndianRupee className="w-3.5 h-3.5 text-neutral-300" /> Price{" "}
+                  <span className="text-rose-400">*</span>
                 </span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.price}
-                onChange={(e) => handleChange('price', e.target.value)}
+                onChange={(e) => handleChange("price", e.target.value)}
                 placeholder="e.g. Free or ₹250"
-                className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
+                className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-neutral-300" /> Capacity <span className="text-rose-400">*</span>
+                  <Users className="w-3.5 h-3.5 text-neutral-300" /> Capacity{" "}
+                  <span className="text-rose-400">*</span>
                 </span>
               </label>
               <input
@@ -249,8 +316,11 @@ export default function HostEventModal({
                 min="1"
                 required
                 value={formData.capacity}
-                onChange={(e) => handleChange('capacity', Number(e.target.value))}
-                className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-white transition"
+                onChange={(e) =>
+                  handleChange("capacity", e.target.value ? Number(e.target.value) : "")
+                }
+                placeholder="e.g. 50"
+                className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
               />
             </div>
           </div>
@@ -259,9 +329,12 @@ export default function HostEventModal({
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <ImageIcon className="w-3.5 h-3.5 text-neutral-300" /> Cover Image URL <span className="text-rose-400">*</span>
+                <ImageIcon className="w-3.5 h-3.5 text-neutral-300" /> Cover
+                Image URL <span className="text-rose-400">*</span>
               </span>
-              <span className="text-[10px] text-neutral-500 font-normal lowercase">unsplash only</span>
+              <span className="text-[10px] text-neutral-500 font-normal lowercase">
+                unsplash only
+              </span>
             </label>
             <input
               type="url"
@@ -269,12 +342,16 @@ export default function HostEventModal({
               pattern="https?:\/\/(images|plus|[a-zA-Z0-9-]+\.)?unsplash\.com\/.*"
               title="Please provide a valid Unsplash image URL (e.g. https://images.unsplash.com/...)"
               value={formData.image}
-              onChange={(e) => handleChange('image', e.target.value)}
+              onChange={(e) => handleChange("image", e.target.value)}
               placeholder="https://images.unsplash.com/photo-..."
-              className="w-full px-4 py-2.5 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
+              className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
             />
             <p className="text-[11px] text-neutral-500">
-              Only Unsplash image URLs are accepted (e.g. <span className="text-neutral-400 font-mono">https://images.unsplash.com/...</span>)
+              Only Unsplash image URLs are accepted (e.g.{" "}
+              <span className="text-neutral-400 font-mono">
+                https://images.unsplash.com/...
+              </span>
+              )
             </p>
           </div>
         </form>
@@ -299,11 +376,11 @@ export default function HostEventModal({
           {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           {isSubmitting
             ? isEditing
-              ? 'Saving...'
-              : 'Publishing...'
+              ? "Saving..."
+              : "Publishing..."
             : isEditing
-            ? 'Save Changes'
-            : 'Publish Event'}
+              ? "Save Changes"
+              : "Publish Event"}
         </button>
       </div>
     </BaseModal>

@@ -67,6 +67,6 @@ The application connects to a live RESTful cloud database powered by **JSONBin.i
 - **Build Tool**: Vite 5
 - **Routing**: React Router DOM (v6)
 - **Styling**: Tailwind CSS & Vanilla CSS (Dark Glassmorphism UI)
-- **UI Components & Icons**: Lucide React & Sonner
+- **UI Components & Form Controls**: HeroUI v2 (`@heroui/react`), Lucide React, Sonner (Toast)
 - **Cloud Database**: JSONBin.io v3 REST API
 - **State Management**: React Context API (`EventContext`) + Custom Hook (`useEvents`)

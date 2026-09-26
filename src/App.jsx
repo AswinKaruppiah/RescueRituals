@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HeroUIProvider } from '@heroui/react';
 import { ToastProvider } from './components/Toast';
 import { EventProvider } from './context/EventContext';
 import ScrollToTop from './components/ScrollToTop';
@@ -9,18 +10,20 @@ import EventDetail from './section/EventDetail';
 
 export default function App() {
   return (
-    <EventProvider>
-      <ToastProvider />
-      <Router>
-        <ScrollToTop />
-        <div className="min-h-screen bg-[#262626] text-white">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/host" element={<HostEvent />} />
-            <Route path="/events/:id" element={<EventDetail />} />
-          </Routes>
-        </div>
-      </Router>
-    </EventProvider>
+    <HeroUIProvider className="dark text-foreground bg-background">
+      <EventProvider>
+        <ToastProvider />
+        <Router>
+          <ScrollToTop />
+          <div className="min-h-screen bg-[#262626] text-white">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/host" element={<HostEvent />} />
+              <Route path="/events/:id" element={<EventDetail />} />
+            </Routes>
+          </div>
+        </Router>
+      </EventProvider>
+    </HeroUIProvider>
   );
 }
