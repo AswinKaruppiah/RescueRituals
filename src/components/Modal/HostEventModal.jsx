@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { DatePicker, Select, SelectItem } from "@heroui/react";
-import { parseDate } from "@internationalized/date";
+import { today, getLocalTimeZone } from "@internationalized/date";
+import { toast } from "sonner";
 import BaseModal from "./BaseModal";
 import { CATEGORY_OPTIONS } from "../../constant/events";
+import {
+  parseTimeRange,
+  formatCalendarDateTime,
+  getCalendarDateTime,
+  isEndAfterStart,
+} from "../../utils/dateHelpers";
 import {
   Calendar,
   Clock,
@@ -17,6 +24,7 @@ import {
   IndianRupee,
   X,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 
 export default function HostEventModal({
@@ -31,6 +39,9 @@ export default function HostEventModal({
     title: "",
     description: "",
     date: "",
+    startTime: "",
+    endDate: "",
+    endTime: "",
     time: "",
     location: "",
     category: "",
@@ -41,22 +52,29 @@ export default function HostEventModal({
 
   useEffect(() => {
     if (editingEvent) {
+      const parsed = parseTimeRange(editingEvent.time || "");
       setFormData({
         title: editingEvent.title || "",
         description: editingEvent.description || "",
         date: editingEvent.date || "",
+        startTime: parsed.startTime || "",
+        endDate: editingEvent.date || "",
+        endTime: parsed.endTime || "",
         time: editingEvent.time || "",
         location: editingEvent.location || "",
         category: editingEvent.category || "",
         image: editingEvent.image || "",
         capacity: editingEvent.capacity ?? "",
-        price: editingEvent.price || "",
+        price: editingEvent.price ? String(editingEvent.price).replace(/\D/g, "") : "",
       });
     } else {
       setFormData({
         title: "",
         description: "",
         date: "",
+        startTime: "",
+        endDate: "",
+        endTime: "",
         time: "",
         location: "",
         category: "",
@@ -74,24 +92,81 @@ export default function HostEventModal({
     }));
   };
 
+  const handleStartDateChange = (val) => {
+    if (!val) {
+      setFormData((prev) => ({
+        ...prev,
+        date: "",
+        endDate: "",
+        startTime: "",
+        time: "",
+      }));
+      return;
+    }
+    const { date, time: startTime } = formatCalendarDateTime(val);
+    setFormData((prev) => ({
+      ...prev,
+      date,
+      endDate: date,
+      startTime,
+      time:
+        startTime && prev.endTime ? `${startTime} - ${prev.endTime}` : startTime || "",
+    }));
+  };
+
+  const handleEndDateChange = (val) => {
+    if (!val) {
+      setFormData((prev) => ({
+        ...prev,
+        endTime: "",
+        time: prev.startTime || "",
+      }));
+      return;
+    }
+    const { time: endTime } = formatCalendarDateTime(val);
+    setFormData((prev) => ({
+      ...prev,
+      endDate: prev.date,
+      endTime,
+      time:
+        prev.startTime && endTime ? `${prev.startTime} - ${endTime}` : endTime || "",
+    }));
+  };
+
+  const isTimeInvalid = Boolean(
+    formData.date &&
+    formData.endDate &&
+    !isEndAfterStart(
+      formData.date,
+      formData.startTime,
+      formData.endDate,
+      formData.endTime,
+    ),
+  );
+
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
     if (onSubmit) {
-      let formattedPrice = String(formData.price || "").trim();
-      if (
-        !formattedPrice ||
-        formattedPrice.toLowerCase() === "free" ||
-        formattedPrice === "0"
-      ) {
-        formattedPrice = "Free";
-      } else if (!formattedPrice.startsWith("₹")) {
-        // Strip out any accidental dollar signs or non-rupee symbols and add ₹
-        const cleanNumber = formattedPrice.replace(/^[$₹\s]+/, "");
-        formattedPrice = `₹${cleanNumber}`;
+      if (isTimeInvalid) {
+        toast.error("End date & time must be after start date & time");
+        return;
       }
+
+      const numericPrice = parseInt(formData.price, 10);
+      const formattedPrice =
+        !formData.price || isNaN(numericPrice) || numericPrice <= 0
+          ? "Free"
+          : `₹${numericPrice}`;
+
+      const finalTime =
+        formData.time ||
+        (formData.startTime && formData.endTime
+          ? `${formData.startTime} - ${formData.endTime}`
+          : formData.startTime || "");
 
       onSubmit({
         ...formData,
+        time: finalTime,
         price: formattedPrice,
       });
     }
@@ -175,30 +250,27 @@ export default function HostEventModal({
             />
           </div>
 
-          {/* Date & Time Grid */}
+          {/* Start Date & Time and End Date & Time Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Date */}
+            {/* Start Date & Time */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Date{" "}
-                  <span className="text-rose-400">*</span>
-                </span>
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5 whitespace-nowrap">
+                <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Start Date & Time{" "}
+                <span className="text-rose-400">*</span>
               </label>
               <DatePicker
-                aria-label="Event Date"
+                aria-label="Start Date & Time"
                 isRequired
-                value={formData.date ? parseDate(formData.date) : null}
-                onChange={(val) => {
-                  if (val) {
-                    handleChange(
-                      "date",
-                      `${val.year}-${String(val.month).padStart(2, "0")}-${String(val.day).padStart(2, "0")}`,
-                    );
-                  } else {
-                    handleChange("date", "");
-                  }
-                }}
+                minValue={today(getLocalTimeZone())}
+                hideTimeZone
+                showMonthAndYearPickers
+                granularity="minute"
+                hourCycle={12}
+                value={getCalendarDateTime(
+                  formData.date,
+                  formData.startTime || formData.time,
+                )}
+                onChange={handleStartDateChange}
                 variant="bordered"
                 classNames={{
                   base: "w-full",
@@ -212,24 +284,93 @@ export default function HostEventModal({
               />
             </div>
 
-            {/* Time */}
+            {/* End Date & Time */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-neutral-300" /> Time{" "}
-                  <span className="text-rose-400">*</span>
-                </span>
+              <label
+                className={`text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap transition-colors ${
+                  !formData.date
+                    ? "text-neutral-600"
+                    : isTimeInvalid
+                      ? "text-rose-400"
+                      : "text-neutral-400"
+                }`}
+              >
+                <Clock
+                  className={`w-3.5 h-3.5 transition-colors ${
+                    !formData.date
+                      ? "text-neutral-600"
+                      : isTimeInvalid
+                        ? "text-rose-400"
+                        : "text-neutral-300"
+                  }`}
+                />{" "}
+                End Time <span className="text-rose-400">*</span>
               </label>
-              <input
-                type="text"
-                required
-                value={formData.time}
-                onChange={(e) => handleChange("time", e.target.value)}
-                placeholder="e.g. 10:00 AM - 02:00 PM"
-                className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
+              <DatePicker
+                aria-label="End Time"
+                isRequired
+                isDisabled={!formData.date}
+                isInvalid={isTimeInvalid}
+                minValue={
+                  getCalendarDateTime(formData.date, formData.startTime) ||
+                  today(getLocalTimeZone())
+                }
+                maxValue={getCalendarDateTime(formData.date, "11:59 PM")}
+                hideTimeZone
+                showMonthAndYearPickers
+                granularity="minute"
+                hourCycle={12}
+                value={getCalendarDateTime(
+                  formData.date,
+                  formData.endTime,
+                )}
+                onChange={handleEndDateChange}
+                variant="bordered"
+                classNames={{
+                  base: "w-full",
+                  inputWrapper: `!border !border-solid !bg-neutral-950/80 !rounded-xl !h-11 !min-h-[44px] !px-4 shadow-none transition-colors ${
+                    isTimeInvalid
+                      ? "!border-rose-500/80 hover:!border-rose-400 focus-within:!border-rose-400"
+                      : "!border-neutral-700/80 hover:!border-neutral-500 focus-within:!border-white"
+                  }`,
+                  input: "!text-white !text-sm",
+                  popoverContent:
+                    "!bg-neutral-900 !border !border-neutral-700 !text-white !rounded-2xl !shadow-2xl dark",
+                  calendar: "dark !bg-neutral-900 !text-white",
+                }}
               />
             </div>
           </div>
+
+          {/* Schedule Preview */}
+          {formData.startTime && (formData.endTime || formData.time) && (
+            <div
+              className={`text-xs flex items-center justify-between px-3.5 py-2 rounded-xl border transition-colors ${
+                isTimeInvalid
+                  ? "bg-rose-950/30 border-rose-800/60 text-rose-300"
+                  : "bg-neutral-950/60 border-neutral-800 text-neutral-300"
+              }`}
+            >
+              <span className="flex items-center gap-1.5 text-neutral-400">
+                {isTimeInvalid ? (
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
+                ) : (
+                  <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                )}
+                {isTimeInvalid ? "Schedule Warning:" : "Event Schedule:"}
+              </span>
+              <span
+                className={`font-semibold ${
+                  isTimeInvalid ? "text-rose-400" : "text-emerald-400"
+                }`}
+              >
+                {isTimeInvalid
+                  ? "End time cannot be before or equal to start time"
+                  : formData.time ||
+                    `${formData.startTime} - ${formData.endTime}`}
+              </span>
+            </div>
+          )}
 
           {/* Location */}
           <div className="space-y-1.5">
@@ -288,28 +429,26 @@ export default function HostEventModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <IndianRupee className="w-3.5 h-3.5 text-neutral-300" /> Price{" "}
-                  <span className="text-rose-400">*</span>
-                </span>
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
+                <IndianRupee className="w-3.5 h-3.5 text-neutral-300" /> Price{" "}
+                <span className="text-rose-400">*</span>
               </label>
               <input
-                type="text"
+                type="number"
+                min="0"
+                max="9999"
                 required
                 value={formData.price}
-                onChange={(e) => handleChange("price", e.target.value)}
-                placeholder="e.g. Free or ₹250"
+                onChange={(e) => handleChange("price", e.target.value.slice(0, 4))}
+                placeholder="0 for Free"
                 className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-neutral-300" /> Capacity{" "}
-                  <span className="text-rose-400">*</span>
-                </span>
+              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-neutral-300" /> Capacity{" "}
+                <span className="text-rose-400">*</span>
               </label>
               <input
                 type="number"
@@ -317,7 +456,10 @@ export default function HostEventModal({
                 required
                 value={formData.capacity}
                 onChange={(e) =>
-                  handleChange("capacity", e.target.value ? Number(e.target.value) : "")
+                  handleChange(
+                    "capacity",
+                    e.target.value ? Number(e.target.value) : "",
+                  )
                 }
                 placeholder="e.g. 50"
                 className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"

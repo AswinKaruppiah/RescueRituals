@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.10",
+    "@heroui/theme": "^2.4.26",
     "@internationalized/date": "^3.12.4",
     "date-fns": "^3.6.0",
     "framer-motion": "^13.4.4",
