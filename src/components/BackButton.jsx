@@ -8,8 +8,10 @@ export default function BackButton({ to, className = '' }) {
   const handleBack = () => {
     if (to) {
       navigate(to);
-    } else {
+    } else if (window.history.state && window.history.state.idx > 0) {
       navigate(-1);
+    } else {
+      navigate('/');
     }
   };
 
