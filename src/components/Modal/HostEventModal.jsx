@@ -135,11 +135,12 @@ export default function HostEventModal({
 
   const isTimeInvalid = Boolean(
     formData.date &&
-    formData.endDate &&
+    formData.startTime &&
+    formData.endTime &&
     !isEndAfterStart(
       formData.date,
       formData.startTime,
-      formData.endDate,
+      formData.date,
       formData.endTime,
     ),
   );
@@ -312,10 +313,15 @@ export default function HostEventModal({
                 isDisabled={!formData.date}
                 isInvalid={isTimeInvalid}
                 minValue={
-                  getCalendarDateTime(formData.date, formData.startTime) ||
-                  today(getLocalTimeZone())
+                  formData.date && formData.startTime
+                    ? getCalendarDateTime(formData.date, formData.startTime)
+                    : today(getLocalTimeZone())
                 }
-                maxValue={getCalendarDateTime(formData.date, "11:59 PM")}
+                maxValue={
+                  formData.date
+                    ? getCalendarDateTime(formData.date, "11:59 PM")
+                    : undefined
+                }
                 hideTimeZone
                 showMonthAndYearPickers
                 granularity="minute"

@@ -7,7 +7,7 @@ An engaging and responsive **Events Module UI** built for consumer platforms. Di
 ## 🚀 Live Demo & Links
 
 - **Live URL**: [https://rescuerituals-assignment.vercel.app/](https://rescuerituals-assignment.vercel.app/)
-- **Video Walkthrough**: `[Insert Loom walkthrough link here]`
+- **Video Walkthrough**: [Watch Video Walkthrough (Google Drive)](https://drive.google.com/file/d/1EiV7GjZePz7MLJMjWTZQFcJC7dL2tjVE/view?usp=sharing)
 
 ---
 

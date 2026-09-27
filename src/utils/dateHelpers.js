@@ -17,7 +17,7 @@ export const parseTimeRange = (timeStr = "") => {
  */
 export const formatCalendarDateTime = (val) => {
   if (!val) return { date: "", time: "" };
-  const d = new Date(val.year, val.month - 1, val.day, val.hour || 0, val.minute || 0);
+  const d = new Date(val.year, val.month - 1, val.day, val.hour ?? 0, val.minute ?? 0);
   const date = `${val.year}-${String(val.month).padStart(2, "0")}-${String(val.day).padStart(2, "0")}`;
   const time = d.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -29,20 +29,21 @@ export const formatCalendarDateTime = (val) => {
 
 /**
  * Converts date & time strings into a HeroUI CalendarDateTime object
+ * Returns null if either date or time is missing so pickers remain blank until set.
  */
-export const getCalendarDateTime = (dateStr, timeStr = "") => {
-  if (!dateStr) return null;
+export const getCalendarDateTime = (dateStr, timeStr) => {
+  if (!dateStr || !timeStr) return null;
   try {
-    const d = new Date(`${dateStr} ${timeStr}`.trim());
-    if (isNaN(d.getTime())) {
-      const [year, month, day] = String(dateStr).split("-").map(Number);
-      if (!year || !month || !day) return null;
-      return new CalendarDateTime(year, month, day, 0, 0);
-    }
+    const [year, month, day] = String(dateStr).split("-").map(Number);
+    if (!year || !month || !day) return null;
+
+    const d = new Date(`2000-01-01 ${timeStr}`.trim());
+    if (isNaN(d.getTime())) return null;
+
     return new CalendarDateTime(
-      d.getFullYear(),
-      d.getMonth() + 1,
-      d.getDate(),
+      year,
+      month,
+      day,
       d.getHours(),
       d.getMinutes()
     );
