@@ -65,7 +65,9 @@ export default function HostEventModal({
         category: editingEvent.category || "",
         image: editingEvent.image || "",
         capacity: editingEvent.capacity ?? "",
-        price: editingEvent.price ? String(editingEvent.price).replace(/\D/g, "") : "",
+        price: editingEvent.price
+          ? String(editingEvent.price).replace(/\D/g, "")
+          : "",
       });
     } else {
       setFormData({
@@ -110,7 +112,9 @@ export default function HostEventModal({
       endDate: date,
       startTime,
       time:
-        startTime && prev.endTime ? `${startTime} - ${prev.endTime}` : startTime || "",
+        startTime && prev.endTime
+          ? `${startTime} - ${prev.endTime}`
+          : startTime || "",
     }));
   };
 
@@ -129,7 +133,9 @@ export default function HostEventModal({
       endDate: prev.date,
       endTime,
       time:
-        prev.startTime && endTime ? `${prev.startTime} - ${endTime}` : endTime || "",
+        prev.startTime && endTime
+          ? `${prev.startTime} - ${endTime}`
+          : endTime || "",
     }));
   };
 
@@ -256,8 +262,8 @@ export default function HostEventModal({
             {/* Start Date & Time */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5 whitespace-nowrap">
-                <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Start Date & Time{" "}
-                <span className="text-rose-400">*</span>
+                <Calendar className="w-3.5 h-3.5 text-neutral-300" /> Start Date
+                & Time <span className="text-rose-400">*</span>
               </label>
               <DatePicker
                 aria-label="Start Date & Time"
@@ -326,10 +332,7 @@ export default function HostEventModal({
                 showMonthAndYearPickers
                 granularity="minute"
                 hourCycle={12}
-                value={getCalendarDateTime(
-                  formData.date,
-                  formData.endTime,
-                )}
+                value={getCalendarDateTime(formData.date, formData.endTime)}
                 onChange={handleEndDateChange}
                 variant="bordered"
                 classNames={{
@@ -416,17 +419,18 @@ export default function HostEventModal({
                   base: "w-full",
                   trigger:
                     "!border !border-solid !border-neutral-700/80 !bg-neutral-950/80 hover:!border-neutral-500 data-[open=true]:!border-white !rounded-xl !h-11 !min-h-[44px] !px-4 shadow-none",
-                  value: "!text-white !text-sm",
+                  value: "!text-white !text-sm truncate",
                   popoverContent:
-                    "!bg-neutral-900 !border !border-neutral-700 !text-white !rounded-2xl !shadow-2xl dark",
-                  listbox: "dark !bg-neutral-900 !text-white",
+                    "!bg-neutral-900 !border !border-neutral-700 !text-white !rounded-2xl !shadow-2xl dark w-full min-w-full sm:!min-w-[280px] sm:!w-auto max-h-60 overflow-y-auto",
+                  listboxWrapper: "w-full max-h-60 overflow-y-auto",
+                  listbox: "dark !bg-neutral-900 !text-white w-full",
                 }}
               >
                 {CATEGORY_OPTIONS.map((cat) => (
                   <SelectItem
                     key={cat}
                     textValue={cat}
-                    className="!text-white hover:!bg-neutral-800 data-[selected=true]:!bg-neutral-800 !rounded-lg"
+                    className="!text-white hover:!bg-neutral-800 data-[selected=true]:!bg-neutral-800 !rounded-lg w-full !text-sm py-2"
                   >
                     {cat}
                   </SelectItem>
@@ -445,7 +449,9 @@ export default function HostEventModal({
                 max="9999"
                 required
                 value={formData.price}
-                onChange={(e) => handleChange("price", e.target.value.slice(0, 4))}
+                onChange={(e) =>
+                  handleChange("price", e.target.value.slice(0, 4))
+                }
                 placeholder="0 for Free"
                 className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
               />
