@@ -491,12 +491,12 @@ export default function HostEventModal({
               </span>
             </label>
             <input
-              type="url"
+              type="text"
               required
-              pattern="https?:\/\/(images|plus|[a-zA-Z0-9-]+\.)?unsplash\.com\/.*"
-              title="Please provide a valid Unsplash image URL (e.g. https://images.unsplash.com/...)"
+              pattern="^(https?:\/\/)?.*unsplash\.com\/.*"
+              title="Please provide a valid Unsplash image URL (e.g. images.unsplash.com/... or https://images.unsplash.com/...)"
               value={formData.image}
-              onChange={(e) => handleChange("image", e.target.value)}
+              onChange={(e) => handleChange("image", e.target.value.trim())}
               placeholder="https://images.unsplash.com/photo-..."
               className="w-full h-11 px-4 bg-neutral-950/80 border border-neutral-700/80 rounded-xl text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-white transition"
             />
