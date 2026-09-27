@@ -56,7 +56,7 @@ export default function Banner() {
     <div className="relative w-full">
       {/* Responsive Carousel Container */}
       <div
-        className="relative h-[65vh] sm:h-[68vh] md:h-[70vh] min-h-[460px] w-full overflow-hidden bg-cover bg-center bg-fixed bg-neutral-900"
+        className="relative h-[65vh] sm:h-[68vh] md:h-[70vh] min-h-[460px] w-full overflow-hidden bg-cover bg-center bg-scroll md:bg-fixed bg-neutral-900"
         style={{ backgroundImage: `url(${event.image})` }}
       >
         {/* Seamless Bottom Fade to #262626 */}

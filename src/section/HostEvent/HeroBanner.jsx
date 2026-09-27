@@ -6,7 +6,7 @@ export default function HeroBanner() {
 
   return (
     <div
-      className="relative h-[42vh] sm:h-[50vh] md:h-[55vh] min-h-[300px] w-full overflow-hidden bg-cover bg-center bg-fixed bg-neutral-900"
+      className="relative h-[42vh] sm:h-[50vh] md:h-[55vh] min-h-[300px] w-full overflow-hidden bg-cover bg-center bg-scroll md:bg-fixed bg-neutral-900"
       style={{ backgroundImage: `url(${hostBannerImage})` }}
     >
       {/* Seamless Bottom Fade to #262626 */}

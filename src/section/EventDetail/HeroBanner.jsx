@@ -4,7 +4,7 @@ import BackButton from '../../components/BackButton';
 export default function HeroBanner({ event }) {
   return (
     <div
-      className="relative h-[45vh] sm:h-[55vh] md:h-[60vh] min-h-[320px] w-full overflow-hidden bg-cover bg-center bg-fixed bg-neutral-900"
+      className="relative h-[45vh] sm:h-[55vh] md:h-[60vh] min-h-[320px] w-full overflow-hidden bg-cover bg-center bg-scroll md:bg-fixed bg-neutral-900"
       style={{ backgroundImage: `url(${event?.image})` }}
     >
       {/* Seamless Bottom Fade to #262626 */}
